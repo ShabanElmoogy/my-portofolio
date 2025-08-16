@@ -49,9 +49,10 @@ model Project {
 model ProjectDescription {
   id        Int      @id @default(autoincrement())
   projectId Int
+  category  String   // Top-level category for tabs (e.g., "Overview", "Features", "Technical", "Implementation")
   title     String   // Section title (e.g., "Key Features", "Technical Highlights", "Project Overview")
   points    String   // JSON array of bullet points
-  order     Int      @default(0) // For ordering sections
+  order     Int      @default(0) // For ordering sections within a category
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

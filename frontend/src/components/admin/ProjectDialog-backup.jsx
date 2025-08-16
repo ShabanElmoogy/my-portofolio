@@ -248,55 +248,33 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
   };
 
   const validateForm = () => {
-    console.log('🔍 Starting form validation...');
+    console.log('🔍 Starting SIMPLE form validation...');
     console.log('📋 Form data:', formData);
     
     const newErrors = {};
 
-    // Basic field validation
+    // Only validate basic required fields
     if (!formData.title || !formData.title.trim()) {
       newErrors.title = 'Title is required';
-      console.log('❌ Title validation failed');
     }
 
     if (!formData.imgPath || !formData.imgPath.trim()) {
       newErrors.imgPath = 'Main image URL is required';
-      console.log('❌ Image path validation failed');
     }
 
     if (!formData.githubUrl || !formData.githubUrl.trim()) {
       newErrors.githubUrl = 'GitHub URL is required';
-      console.log('❌ GitHub URL validation failed');
     }
 
     if (!formData.previewUrl || !formData.previewUrl.trim()) {
       newErrors.previewUrl = 'Preview URL is required';
-      console.log('❌ Preview URL validation failed');
     }
 
-    // Validate descriptions - only validate sections that have meaningful content
-    console.log('🔍 Validating descriptions:', formData.descriptions);
-    
-    // Filter descriptions that have both title and at least one valid point
-    const validDescriptions = formData.descriptions.filter(desc => {
-      const hasTitle = desc.title && desc.title.trim();
-      const hasValidPoints = desc.points && desc.points.some(point => point && point.trim());
-      return hasTitle && hasValidPoints;
-    });
-    
-    console.log('🔍 Valid descriptions found:', validDescriptions);
-    
-    // Check if we have at least one complete description
-    if (validDescriptions.length === 0) {
-      newErrors.descriptions = 'At least one complete description section is required (with title and bullet points)';
-      console.log('❌ No complete descriptions found');
-    }
-
-    console.log('🔍 Validation errors found:', newErrors);
+    console.log('🔍 Simple validation errors:', newErrors);
     setErrors(newErrors);
     
     const isValid = Object.keys(newErrors).length === 0;
-    console.log(`✅ Form validation result: ${isValid ? 'PASSED' : 'FAILED'}`);
+    console.log(`✅ Simple validation result: ${isValid ? 'PASSED' : 'FAILED'}`);
     
     return isValid;
   };
@@ -314,32 +292,22 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
       console.log('✅ Validation passed, proceeding with save');
       setLoading(true);
       
-      // Clean up descriptions - ensure every description has valid points
+      // Clean up descriptions - remove empty points and empty descriptions
       const cleanedDescriptions = formData.descriptions
-        .map(desc => {
-          // Filter out empty points
-          const validPoints = desc.points ? desc.points.filter(point => point && point.trim()) : [];
-          
-          // If no valid points, add a default one
-          if (validPoints.length === 0) {
-            validPoints.push('Key feature or detail about this project');
-          }
-          
-          return {
-            category: desc.category || 'Overview',
-            title: desc.title || 'Project Details',
-            points: validPoints,
-            order: desc.order || 0
-          };
-        })
-        .filter(desc => desc.title && desc.title.trim()); // Only keep descriptions with titles
+        .map(desc => ({
+          category: desc.category || 'Overview',
+          title: desc.title || 'Default Title',
+          points: desc.points ? desc.points.filter(point => point && point.trim()) : ['Default point'],
+          order: desc.order || 0
+        }))
+        .filter(desc => desc.title !== 'Default Title' || desc.points.length > 0);
 
       // Ensure we have at least one description
       if (cleanedDescriptions.length === 0) {
         cleanedDescriptions.push({
           category: 'Overview',
           title: 'Project Overview',
-          points: ['This is an innovative project showcasing modern development practices'],
+          points: ['This is a great project'],
           order: 0
         });
       }
@@ -422,12 +390,6 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
         {errors.submit && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {errors.submit}
-          </Alert>
-        )}
-
-        {errors.descriptions && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {errors.descriptions}
           </Alert>
         )}
 
@@ -585,173 +547,11 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
           {/* Descriptions with Tabs */}
           <Grid size={{ xs: 12 }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: 'primary.main', mt: 2 }}>
-              Project Descriptions
+              Project Descriptions (Optional for now)
             </Typography>
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Organize your project descriptions into categories. Each category can have multiple sections.
+              You can skip this section for testing - descriptions will be auto-generated.
             </Typography>
-          </Grid>
-
-          <Grid size={{ xs: 12 }}>
-            <Paper elevation={2} sx={{ borderRadius: 2, overflow: 'hidden' }}>
-              {/* Category Tabs */}
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'grey.50' }}>
-                <Tabs 
-                  value={activeTab} 
-                  onChange={(e, newValue) => setActiveTab(newValue)}
-                  variant="scrollable"
-                  scrollButtons="auto"
-                >
-                  {usedCategories.map((category, index) => (
-                    <Tab 
-                      key={category} 
-                      label={
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <TabIcon fontSize="small" />
-                          <span>{category}</span>
-                          <Chip 
-                            label={getDescriptionsByCategory(category).length} 
-                            size="small" 
-                            color="primary"
-                            sx={{ minWidth: 20, height: 20 }}
-                          />
-                        </Stack>
-                      }
-                    />
-                  ))}
-                </Tabs>
-              </Box>
-
-              {/* Tab Content */}
-              <Box sx={{ p: 3 }}>
-                {/* Add New Category */}
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                    Add New Category
-                  </Typography>
-                  <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-                    {DESCRIPTION_CATEGORIES.filter(cat => !usedCategories.includes(cat)).map(category => (
-                      <Button
-                        key={category}
-                        variant="outlined"
-                        size="small"
-                        startIcon={<AddIcon />}
-                        onClick={() => {
-                          addDescriptionSection(category);
-                          setActiveTab(usedCategories.length); // Switch to new tab
-                        }}
-                      >
-                        {category}
-                      </Button>
-                    ))}
-                  </Stack>
-                </Box>
-
-                <Divider sx={{ mb: 3 }} />
-
-                {/* Current Category Sections */}
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  {currentCategory} Sections
-                </Typography>
-
-                {currentCategoryDescriptions.map((description, localIndex) => {
-                  const globalIndex = formData.descriptions.findIndex(d => d === description);
-                  return (
-                    <Paper
-                      key={globalIndex}
-                      elevation={1}
-                      sx={{ p: 3, mb: 3, borderRadius: 2, border: '1px solid', borderColor: 'grey.200' }}
-                    >
-                      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                          {currentCategory} Section {localIndex + 1}
-                        </Typography>
-                        <Stack direction="row" spacing={1}>
-                          <IconButton size="small" color="primary">
-                            <DragHandleIcon />
-                          </IconButton>
-                          {currentCategoryDescriptions.length > 1 && (
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => removeDescriptionSection(globalIndex)}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          )}
-                        </Stack>
-                      </Stack>
-
-                      <TextField
-                        fullWidth
-                        label="Section Title"
-                        value={description.title}
-                        onChange={(e) => handleDescriptionChange(globalIndex, 'title', e.target.value)}
-                        error={!!errors[`description_${globalIndex}_title`]}
-                        helperText={errors[`description_${globalIndex}_title`]}
-                        sx={{ mb: 2 }}
-                        placeholder={`e.g., ${currentCategory} Details, Key ${currentCategory} Points`}
-                        required
-                      />
-
-                      <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                        Bullet Points
-                      </Typography>
-
-                      {description.points.map((point, pointIndex) => (
-                        <Stack key={pointIndex} direction="row" spacing={1} sx={{ mb: 1 }}>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            value={point}
-                            onChange={(e) => handlePointChange(globalIndex, pointIndex, e.target.value)}
-                            placeholder="Enter a bullet point..."
-                            InputProps={{
-                              startAdornment: <Typography sx={{ mr: 1, color: 'text.secondary' }}>•</Typography>
-                            }}
-                          />
-                          {description.points.length > 1 && (
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => removePoint(globalIndex, pointIndex)}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          )}
-                        </Stack>
-                      ))}
-
-                      {errors[`description_${globalIndex}_points`] && (
-                        <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
-                          {errors[`description_${globalIndex}_points`]}
-                        </Typography>
-                      )}
-
-                      <Button
-                        startIcon={<AddIcon />}
-                        onClick={() => addPoint(globalIndex)}
-                        size="small"
-                        sx={{ mt: 1 }}
-                      >
-                        Add Bullet Point
-                      </Button>
-                    </Paper>
-                  );
-                })}
-
-                {/* Add Section to Current Category */}
-                <Button
-                  startIcon={<AddIcon />}
-                  onClick={() => addDescriptionSection(currentCategory)}
-                  variant="outlined"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                >
-                  Add Section to {currentCategory}
-                </Button>
-              </Box>
-            </Paper>
           </Grid>
         </Grid>
       </DialogContent>

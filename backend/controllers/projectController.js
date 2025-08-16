@@ -18,6 +18,7 @@ const formatProject = (project) => ({
   technologies: project.technologies?.map(pt => pt.technology) || [],
   descriptions: project.descriptions?.map(desc => ({
     id: desc.id,
+    category: desc.category,
     title: desc.title,
     points: JSON.parse(desc.points || '[]'),
     order: desc.order
@@ -169,8 +170,10 @@ export const createProject = async (req, res) => {
       previewUrl,
       technologyIds, 
       featured = false,
-      descriptions = [] // Array of {title, points, order}
+      descriptions = [] // Array of {category, title, points, order}
     } = req.body;
+
+    console.log('Creating project with data:', req.body);
 
     // Validation
     if (!title) {
@@ -191,6 +194,9 @@ export const createProject = async (req, res) => {
 
     // Validate descriptions
     for (const desc of descriptions) {
+      if (!desc.category || !desc.category.trim()) {
+        return res.status(400).json({ error: "Description category is required" });
+      }
       if (!desc.title || !desc.title.trim()) {
         return res.status(400).json({ error: "Description section title is required" });
       }
@@ -228,6 +234,7 @@ export const createProject = async (req, res) => {
         },
         descriptions: {
           create: descriptions.map((desc, index) => ({
+            category: desc.category,
             title: desc.title,
             points: JSON.stringify(desc.points),
             order: desc.order !== undefined ? desc.order : index
@@ -243,8 +250,10 @@ export const createProject = async (req, res) => {
       },
     });
 
+    console.log('Project created successfully:', project.id);
     res.status(201).json(formatProject(project));
   } catch (error) {
+    console.error('Error creating project:', error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -266,6 +275,8 @@ export const updateProject = async (req, res) => {
       descriptions = []
     } = req.body;
 
+    console.log('Updating project with data:', req.body);
+
     // Validation
     if (title && !title.trim()) {
       return res.status(400).json({ error: "Title cannot be empty" });
@@ -286,6 +297,9 @@ export const updateProject = async (req, res) => {
     // Validate descriptions if provided
     if (descriptions && descriptions.length > 0) {
       for (const desc of descriptions) {
+        if (!desc.category || !desc.category.trim()) {
+          return res.status(400).json({ error: "Description category is required" });
+        }
         if (!desc.title || !desc.title.trim()) {
           return res.status(400).json({ error: "Description section title is required" });
         }
@@ -357,6 +371,7 @@ export const updateProject = async (req, res) => {
         },
         descriptions: {
           create: descriptions.map((desc, index) => ({
+            category: desc.category,
             title: desc.title,
             points: JSON.stringify(desc.points),
             order: desc.order !== undefined ? desc.order : index
@@ -372,8 +387,10 @@ export const updateProject = async (req, res) => {
       },
     });
 
+    console.log('Project updated successfully:', project.id);
     res.json(formatProject(project));
   } catch (error) {
+    console.error('Error updating project:', error);
     res.status(400).json({ error: error.message });
   }
 };

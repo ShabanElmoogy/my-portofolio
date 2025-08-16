@@ -20,7 +20,9 @@ import {
   MobileStepper,
   Collapse,
   Fade,
-  Avatar
+  Avatar,
+  Tabs,
+  Tab
 } from "@mui/material";
 import {
   Launch as LaunchIcon,
@@ -43,8 +45,9 @@ import {
   Palette as PaletteIcon,
   Security as SecurityIcon,
   Speed as SpeedIcon,
-  Mobile as MobileIcon,
-  Web as WebIcon
+  PhoneAndroid as MobileIcon,
+  Language as WebIcon,
+  Tab as TabIcon
 } from "@mui/icons-material";
 import { useTheme } from "../../contexts/ThemeContext";
 
@@ -52,7 +55,7 @@ const API_URL = "http://localhost:3000/projects";
 
 // Enhanced Description Section Component
 const EnhancedDescriptionSection = ({ description, index, isDark }) => {
-  const [expanded, setExpanded] = useState(index === 0); // First section expanded by default
+  const [expanded, setExpanded] = useState(true); // All sections expanded by default in tabs
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
@@ -97,7 +100,7 @@ const EnhancedDescriptionSection = ({ description, index, isDark }) => {
   return (
     <Fade in={animate} timeout={800} style={{ transitionDelay: `${index * 100}ms` }}>
       <Paper
-        elevation={expanded ? 8 : 3}
+        elevation={expanded ? 6 : 3}
         sx={{
           mb: 3,
           borderRadius: 3,
@@ -107,10 +110,10 @@ const EnhancedDescriptionSection = ({ description, index, isDark }) => {
             : 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
           border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          transform: expanded ? 'translateY(-4px)' : 'translateY(0)',
+          transform: expanded ? 'translateY(-2px)' : 'translateY(0)',
           '&:hover': {
-            transform: expanded ? 'translateY(-6px)' : 'translateY(-2px)',
-            boxShadow: expanded ? 12 : 6
+            transform: expanded ? 'translateY(-4px)' : 'translateY(-2px)',
+            boxShadow: expanded ? 8 : 6
           }
         }}
       >
@@ -290,6 +293,153 @@ const EnhancedDescriptionSection = ({ description, index, isDark }) => {
         </Collapse>
       </Paper>
     </Fade>
+  );
+};
+
+// Tabbed Description Component
+const TabbedDescriptions = ({ descriptions, isDark }) => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  // Group descriptions by category
+  const groupedDescriptions = descriptions.reduce((acc, desc) => {
+    const category = desc.category || 'Overview';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(desc);
+    return acc;
+  }, {});
+
+  const categories = Object.keys(groupedDescriptions);
+  const currentCategory = categories[activeTab] || 'Overview';
+  const currentDescriptions = groupedDescriptions[currentCategory] || [];
+
+  // Get category icon
+  const getCategoryIcon = (category) => {
+    const categoryLower = category.toLowerCase();
+    if (categoryLower.includes('overview')) return <DescriptionIcon />;
+    if (categoryLower.includes('feature')) return <CheckCircleIcon />;
+    if (categoryLower.includes('technical')) return <CodeIcon />;
+    if (categoryLower.includes('implementation')) return <BuildIcon />;
+    if (categoryLower.includes('design')) return <PaletteIcon />;
+    if (categoryLower.includes('performance')) return <SpeedIcon />;
+    return <TabIcon />;
+  };
+
+  if (categories.length === 0) {
+    return (
+      <EnhancedDescriptionSection
+        description={{
+          title: "About This Project",
+          points: [
+            "This is an innovative project showcasing modern web development practices and cutting-edge technologies.",
+            "Built with attention to detail and user experience in mind.",
+            "Demonstrates proficiency in full-stack development and modern design principles."
+          ]
+        }}
+        index={0}
+        isDark={isDark}
+      />
+    );
+  }
+
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        borderRadius: 3,
+        overflow: 'hidden',
+        background: isDark 
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
+          : 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)',
+        border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+      }}
+    >
+      {/* Category Tabs */}
+      <Box sx={{ 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        background: isDark 
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)'
+          : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+      }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={(e, newValue) => setActiveTab(newValue)}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            '& .MuiTab-root': {
+              minHeight: 64,
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '1rem'
+            }
+          }}
+        >
+          {categories.map((category, index) => (
+            <Tab 
+              key={category} 
+              label={
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  {getCategoryIcon(category)}
+                  <span>{category}</span>
+                  <Chip 
+                    label={groupedDescriptions[category].length} 
+                    size="small" 
+                    color="primary"
+                    sx={{ minWidth: 24, height: 20, fontSize: '0.75rem' }}
+                  />
+                </Stack>
+              }
+            />
+          ))}
+        </Tabs>
+      </Box>
+
+      {/* Tab Content */}
+      <Box sx={{ p: 3 }}>
+        <Fade in={true} timeout={600} key={activeTab}>
+          <Box>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{
+                fontWeight: 700,
+                mb: 3,
+                background: "linear-gradient(45deg, #667eea, #764ba2)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2
+              }}
+            >
+              <Avatar
+                sx={{
+                  background: "linear-gradient(45deg, #667eea, #764ba2)",
+                  width: 40,
+                  height: 40
+                }}
+              >
+                {getCategoryIcon(currentCategory)}
+              </Avatar>
+              {currentCategory}
+            </Typography>
+
+            {currentDescriptions.map((desc, index) => (
+              <EnhancedDescriptionSection
+                key={`${currentCategory}-${index}`}
+                description={desc}
+                index={index}
+                isDark={isDark}
+              />
+            ))}
+          </Box>
+        </Fade>
+      </Box>
+    </Paper>
   );
 };
 
@@ -882,58 +1032,12 @@ const ProjectDetail = () => {
 
               <Divider sx={{ my: 3 }} />
 
-              {/* Enhanced Description Sections */}
+              {/* Enhanced Tabbed Description Sections */}
               <Box sx={{ mb: 4 }}>
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  sx={{
-                    fontWeight: 700,
-                    mb: 3,
-                    background: "linear-gradient(45deg, #667eea, #764ba2)",
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2
-                  }}
-                >
-                  <Avatar
-                    sx={{
-                      background: "linear-gradient(45deg, #667eea, #764ba2)",
-                      width: 40,
-                      height: 40
-                    }}
-                  >
-                    <DescriptionIcon />
-                  </Avatar>
-                  Project Details
-                </Typography>
-
-                {project.descriptions && project.descriptions.length > 0 ? (
-                  project.descriptions.map((desc, index) => (
-                    <EnhancedDescriptionSection
-                      key={desc.id || index}
-                      description={desc}
-                      index={index}
-                      isDark={isDark}
-                    />
-                  ))
-                ) : (
-                  <EnhancedDescriptionSection
-                    description={{
-                      title: "About This Project",
-                      points: [
-                        "This is an innovative project showcasing modern web development practices and cutting-edge technologies.",
-                        "Built with attention to detail and user experience in mind.",
-                        "Demonstrates proficiency in full-stack development and modern design principles."
-                      ]
-                    }}
-                    index={0}
-                    isDark={isDark}
-                  />
-                )}
+                <TabbedDescriptions 
+                  descriptions={project.descriptions || []} 
+                  isDark={isDark} 
+                />
               </Box>
 
               {/* Technologies */}
