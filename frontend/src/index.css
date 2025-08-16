@@ -1,0 +1,183 @@
+/* ================
+Table Of Contents
+===================
+1.Global Styles
+2.Change Mode
+3.Button Style
+4.Media Query
+ ================*/
+
+/* ===============
+ 1.Global Styles
+  ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+html {
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+  letter-spacing: 0.1px;
+  scroll-behavior: smooth;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+:root {
+  --primary: #000;
+  --secondary: rgb(24 24 27);
+  --border: rgba(63, 63, 70, 0.4);
+  --title: rgb(244 244 245);
+  --subtitle: rgb(161 161 170);
+  --bgheader: rgb(39, 39, 42);
+  --blue: rgb(93, 188, 252);
+  --icon-hover: #d4d4d8;
+
+  --container-padding: 4.8rem;
+}
+
+body {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.container {
+  border: 2px solid var(--border);
+  width: 80%;
+  margin-inline: auto;
+  padding: 0 var(--container-padding);
+  background-color: var(--secondary);
+}
+
+.divider {
+  /* beacause padding in container increase width of divider */
+  border-bottom: 1px solid var(--border);
+  margin: 1.5rem 0;
+  width: calc(100% + var(--container-padding) + var(--container-padding));
+  margin-left: calc(var(--container-padding) * -1);
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.border {
+  border: 2px solid red;
+}
+
+::-webkit-scrollbar {
+  width: 0.8rem;
+}
+
+::-webkit-scrollbar-track {
+  border: 7px solid #292c3b;
+  box-shadow: inset 0 0 2.5px 2px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  background-color: #d4d4d8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* for Firefox */
+html {
+  scrollbar-color: #3d4a59;
+}
+
+/* =================
+2.Change Mode
+ =================*/
+.light {
+  --primary: rgba(250, 250, 250, 1);
+  --secondary: rgb(255, 255, 255);
+  --border: rgba(202, 202, 202, 0.518);
+
+  --title: rgb(39, 39, 42);
+  --subtitle: rgb(82, 82, 91);
+
+  --bgheader: rgb(253, 253, 253);
+  --blue: rgb(0, 149, 246);
+
+  --icon-hover: #333;
+}
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: initial;
+  transition: 0.2s;
+}
+
+/* ================
+3.Button Style
+ ================*/
+button {
+  all: unset;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:active {
+  scale: 0.95;
+}
+
+.scroll2Top {
+  background-color: rgba(25, 118, 210, 0.85);
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  position: fixed;
+  bottom: 2rem;
+  right: 3%;
+  text-align: center;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ==================
+4.Media Query
+ ===================*/
+@media (max-width: 1000px) {
+  .container {
+    --container-padding: 1.7rem;
+    width: 90%;
+    padding: 0 var(--container-padding);
+  }
+
+  .divider {
+    /* beacause padding in container increase width of divider */
+    width: calc(100% + var(--container-padding) + var(--container-padding));
+    margin-left: calc(var(--container-padding) * -1);
+  }
+}
+
+@media (max-width: 800px) {
+  .container {
+    width: 100%;
+    padding: 0 var(--container-padding);
+  }
+
+  .scroll2Top {
+    opacity: 0.4;
+    width: 2rem;
+    height: 2rem;
+  }
+}

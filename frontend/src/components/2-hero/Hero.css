@@ -1,0 +1,25 @@
+/* Hero section is now fully MUI-based */
+/* Only keeping minimal custom styles if needed */
+
+/* Custom animations for enhanced effects */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Optional: Add floating animation to avatar on hover */
+.hero-avatar:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Ensure proper spacing for mobile */
+@media (max-width: 600px) {
+  .hero-section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}

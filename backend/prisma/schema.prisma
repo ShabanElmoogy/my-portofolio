@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model BusinessType {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  projects  Project[]
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  projects  Project[]
+}
+
+model Technology {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  projects  ProjectTechnology[]
+}
+
+model Project {
+  id             Int                 @id @default(autoincrement())
+  title          String
+  businessTypeId Int?
+  businessType   BusinessType?       @relation(fields: [businessTypeId], references: [id])
+  categoryId     Int?
+  category       Category?           @relation(fields: [categoryId], references: [id])
+  imgPath        String              // Main image (required)
+  images         ProjectImage[]      // Additional images
+  githubUrl      String              // GitHub repository URL (required)
+  previewUrl     String              // Live preview URL (required)
+  featured       Boolean             @default(false)
+  technologies   ProjectTechnology[]
+  descriptions   ProjectDescription[] // Multiple description sections (required)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model ProjectDescription {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  title     String   // Section title (e.g., "Key Features", "Technical Highlights", "Project Overview")
+  points    String   // JSON array of bullet points
+  order     Int      @default(0) // For ordering sections
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectImage {
+  id        Int     @id @default(autoincrement())
+  projectId Int
+  imageUrl  String
+  altText   String?
+  order     Int     @default(0)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ProjectTechnology {
+  id           Int        @id @default(autoincrement())
+  projectId    Int
+  technologyId Int
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, technologyId])
+}

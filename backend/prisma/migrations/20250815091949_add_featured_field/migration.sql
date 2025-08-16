@@ -1,0 +1,18 @@
+-- RedefineTables
+PRAGMA defer_foreign_keys=ON;
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_Project" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "title" TEXT NOT NULL,
+    "businessTypeId" INTEGER,
+    "categoryId" INTEGER,
+    "imgPath" TEXT NOT NULL,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    CONSTRAINT "Project_businessTypeId_fkey" FOREIGN KEY ("businessTypeId") REFERENCES "BusinessType" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Project_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+INSERT INTO "new_Project" ("businessTypeId", "categoryId", "id", "imgPath", "title") SELECT "businessTypeId", "categoryId", "id", "imgPath", "title" FROM "Project";
+DROP TABLE "Project";
+ALTER TABLE "new_Project" RENAME TO "Project";
+PRAGMA foreign_keys=ON;
+PRAGMA defer_foreign_keys=OFF;

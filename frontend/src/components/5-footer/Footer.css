@@ -1,0 +1,117 @@
+/* Enhanced Footer Card Styles */
+
+/* Smooth transitions for all elements */
+* {
+  transition: all 0.2s ease;
+}
+
+/* Enhanced Paper card effects */
+.MuiPaper-root {
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Link hover effects */
+.MuiLink-root {
+  position: relative;
+}
+
+.MuiLink-root::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(45deg, #2196F3, #21CBF3);
+  transition: width 0.3s ease;
+}
+
+.MuiLink-root:hover::after {
+  width: 100%;
+}
+
+/* Social icon enhancements */
+.MuiIconButton-root {
+  position: relative;
+  overflow: hidden;
+}
+
+.MuiIconButton-root::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.MuiIconButton-root:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .MuiContainer-root {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  .MuiPaper-root {
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .MuiGrid-container {
+    margin: 0 !important;
+  }
+  
+  .MuiGrid-item {
+    padding: 8px !important;
+  }
+  
+  .MuiTypography-h6 {
+    font-size: 1rem !important;
+  }
+  
+  .MuiIconButton-root {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .MuiPaper-root {
+    padding: 12px !important;
+    margin-bottom: 8px;
+  }
+}
+
+/* Dark mode specific enhancements */
+@media (prefers-color-scheme: dark) {
+  .MuiPaper-root {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+  }
+}
+
+/* Light mode specific enhancements */
+@media (prefers-color-scheme: light) {
+  .MuiPaper-root {
+    background: rgba(33,150,243,0.05) !important;
+    border: 1px solid rgba(33,150,243,0.1) !important;
+    box-shadow: 0 4px 20px rgba(33,150,243,0.05) !important;
+  }
+}
+
+/* Focus states for accessibility */
+.MuiIconButton-root:focus,
+.MuiLink-root:focus {
+  outline: 2px solid rgba(33, 150, 243, 0.5);
+  outline-offset: 2px;
+}

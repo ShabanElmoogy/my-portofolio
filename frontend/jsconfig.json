@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2015",
+      "dom"
+    ], // Add "es2015" or "es2017" or later
+    "checkJs": true,
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "skipLibCheck": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}

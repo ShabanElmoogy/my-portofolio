@@ -1,0 +1,158 @@
+/* Main component styles for MUI integration */
+
+/* Custom styles for theme integration */
+.main-container {
+  padding: 2rem 0;
+}
+
+/* Custom hover effects for project cards */
+.project-card {
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Filter button animations */
+.filter-button {
+  transition: all 0.2s ease;
+}
+
+.filter-button:hover {
+  transform: scale(1.02);
+}
+
+/* Loading skeleton animations */
+.skeleton-card {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Custom scrollbar for filter sidebar */
+.filter-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .main-container {
+    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-container {
+    padding: 0.5rem 0;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .filter-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Animation for page transitions */
+.page-transition {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom chip styles */
+.technology-chip {
+  margin: 2px;
+  font-size: 0.75rem;
+}
+
+/* Pagination custom styles */
+.custom-pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Card content spacing */
+.card-content {
+  padding: 1rem;
+}
+
+.card-actions {
+  padding: 0.5rem 1rem 1rem;
+  justify-content: space-between;
+}
+
+/* Mobile filter chips container */
+.mobile-filters {
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+/* Sticky filter sidebar */
+.sticky-sidebar {
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+/* Grid container spacing */
+.projects-grid {
+  margin-top: 1rem;
+}
+
+/* Loading state */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+/* Icon button hover effects */
+.icon-button {
+  transition: all 0.2s ease;
+}
+
+.icon-button:hover {
+  transform: scale(1.1);
+}
