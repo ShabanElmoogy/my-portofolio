@@ -21,8 +21,9 @@ services:
       mountPath: /data
       sizeGB: 1
 
-  - type: static
+  - type: pserv
     name: portfolio-frontend
+    env: static
     rootDir: frontend
     buildCommand: |
       npm install
