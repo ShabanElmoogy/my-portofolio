@@ -33,11 +33,12 @@ import {
   Cancel as CancelIcon,
   Tab as TabIcon
 } from '@mui/icons-material';
+import { API_URL as API_BASE } from './utils/constants';
 
-const API_URL = "http://localhost:3000/projects";
-const CATEGORIES_URL = "http://localhost:3000/categories";
-const BUSINESS_TYPES_URL = "http://localhost:3000/business-types";
-const TECHNOLOGIES_URL = "http://localhost:3000/technologies";
+const API_URL = `${API_BASE}/projects`;
+const CATEGORIES_URL = `${API_BASE}/categories`;
+const BUSINESS_TYPES_URL = `${API_BASE}/business-types`;
+const TECHNOLOGIES_URL = `${API_BASE}/technologies`;
 
 // Predefined description categories for tabs
 const DESCRIPTION_CATEGORIES = [

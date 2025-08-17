@@ -25,8 +25,9 @@ import {
   Star as StarIcon
 } from "@mui/icons-material";
 import { useTheme } from "../../contexts/ThemeContext";
+import { API_URL as API_BASE } from "../admin/utils/constants";
 
-const FEATURED_PROJECTS_URL = "http://localhost:3000/projects/featured";
+const FEATURED_PROJECTS_URL = `${API_BASE}/projects/featured`;
 
 const FeaturedProjects = () => {
   const { isDark } = useTheme();

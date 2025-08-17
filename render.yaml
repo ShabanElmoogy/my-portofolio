@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: portfolio-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: |
+      npm install
+      npx prisma generate
+      npx prisma migrate deploy
+    startCommand: node index.js
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Use a Render Disk to persist SQLite; Prisma will read this DATABASE_URL
+      - key: DATABASE_URL
+        value: file:/data/dev.db
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
+
+  - type: static
+    name: portfolio-frontend
+    rootDir: frontend
+    buildCommand: |
+      npm install
+      npm run build
+    staticPublishPath: dist
+    autoDeploy: true
+    envVars:
+      # Expose the backend base URL to Vite at build time
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: portfolio-backend
+          property: url
+    routes:
+      # SPA fallback so client-side routing works
+      - type: rewrite
+        source: /*
+        destination: /index.html

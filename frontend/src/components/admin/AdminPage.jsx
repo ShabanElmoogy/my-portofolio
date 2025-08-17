@@ -26,8 +26,9 @@ import {
   Star as StarIcon
 } from '@mui/icons-material';
 import ProjectDialog from './ProjectDialog';
+import { API_URL as API_BASE } from './utils/constants';
 
-const API_URL = "http://localhost:3000/projects";
+const API_URL = `${API_BASE}/projects`;
 
 const AdminPage = () => {
   const [projects, setProjects] = useState([]);

@@ -39,11 +39,12 @@ import {
 } from "@mui/icons-material";
 import { useTheme } from "../../contexts/ThemeContext";
 import ProjectDialog from "../admin/ProjectDialog";
+import { API_URL as API_BASE } from "../admin/utils/constants";
 
-const API_URL = "http://localhost:3000/projects";
-const CATEGORIES_URL = "http://localhost:3000/categories";
-const BUSINESS_TYPES_URL = "http://localhost:3000/business-types";
-const TECHNOLOGIES_URL = "http://localhost:3000/technologies";
+const API_URL = `${API_BASE}/projects`;
+const CATEGORIES_URL = `${API_BASE}/categories`;
+const BUSINESS_TYPES_URL = `${API_BASE}/business-types`;
+const TECHNOLOGIES_URL = `${API_BASE}/technologies`;
 
 const Main = () => {
   const { isDark } = useTheme();

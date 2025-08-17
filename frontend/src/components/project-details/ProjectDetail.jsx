@@ -50,8 +50,9 @@ import {
   Tab as TabIcon
 } from "@mui/icons-material";
 import { useTheme } from "../../contexts/ThemeContext";
+import { API_URL as API_BASE } from "../admin/utils/constants";
 
-const API_URL = "http://localhost:3000/projects";
+const API_URL = `${API_BASE}/projects`;
 
 // Enhanced Description Section Component
 const EnhancedDescriptionSection = ({ description, index, isDark }) => {

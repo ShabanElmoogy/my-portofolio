@@ -25,8 +25,9 @@ import {
   NavigateNext as NavigateNextIcon,
   NavigateBefore as NavigateBeforeIcon
 } from "@mui/icons-material";
+import { API_URL as API_BASE } from "../admin/utils/constants";
 
-const FEATURED_PROJECTS_URL = "http://localhost:3000/projects/featured";
+const FEATURED_PROJECTS_URL = `${API_BASE}/projects/featured`;
 
 const FeaturedProjectsCarousel = () => {
   const theme = useTheme();
