@@ -181,11 +181,97 @@ const Hero = () => {
                         color: "primary.main",
                         fontWeight: 600,
                         fontSize: { xs: "0.9rem", sm: "1.1rem" },
-                        mb: 1
+                        mb: 0.5
                       }}
                     >
                       Full-Stack Developer
                     </Typography>
+
+                    {/* Enhanced Experience Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 2,
+                          background: "linear-gradient(45deg, rgba(33, 150, 243, 0.1), rgba(33, 203, 243, 0.1))",
+                          border: "1px solid",
+                          borderColor: "primary.main",
+                          borderOpacity: 0.3,
+                          transition: "all 0.3s ease",
+                          cursor: "pointer",
+                          width: "fit-content",
+                          mb: 1,
+                          "&:hover": {
+                            transform: "scale(1.05)",
+                            boxShadow: "0 4px 12px rgba(33, 150, 243, 0.2)",
+                            background: "linear-gradient(45deg, rgba(33, 150, 243, 0.15), rgba(33, 203, 243, 0.15))"
+                          }
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            backgroundColor: "success.main",
+                            animation: "pulse 2s infinite",
+                            "@keyframes pulse": {
+                              "0%": {
+                                opacity: 1,
+                                transform: "scale(1)"
+                              },
+                              "50%": {
+                                opacity: 0.7,
+                                transform: "scale(1.2)"
+                              },
+                              "100%": {
+                                opacity: 1,
+                                transform: "scale(1)"
+                              }
+                            }
+                          }}
+                        />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "primary.main",
+                            fontWeight: 600,
+                            fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                            fontFamily: "monospace"
+                          }}
+                        >
+                          2021 → now
+                        </Typography>
+                        <Box
+                          sx={{
+                            px: 0.8,
+                            py: 0.2,
+                            borderRadius: 1,
+                            backgroundColor: "success.main",
+                            color: "white"
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontSize: { xs: "0.6rem", sm: "0.65rem" },
+                              fontWeight: 600,
+                              lineHeight: 1
+                            }}
+                          >
+                            3+ YRS
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </motion.div>
 
                     {/* Quick Description */}
                     <Typography
@@ -307,94 +393,6 @@ const Hero = () => {
             </Box>
           </Grid>
         </Grid>
-
-        {/* Call to Action - Compact */}
-        <Box sx={{ mt: 3, pt: 3, borderTop: 1, borderColor: "divider" }}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={2}
-              alignItems="center"
-            >
-              <Button
-                variant="contained"
-                size="medium"
-                endIcon={<ArrowForwardIcon />}
-                sx={{
-                  borderRadius: 2,
-                  py: 1,
-                  px: 2.5,
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
-                  background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-                  boxShadow: "0 4px 12px rgba(33, 150, 243, 0.3)",
-                  "&:hover": {
-                    background: "linear-gradient(45deg, #1976D2 30%, #1CB5E0 90%)",
-                    transform: "translateY(-1px)",
-                    boxShadow: "0 6px 16px rgba(33, 150, 243, 0.4)"
-                  }
-                }}
-              >
-                View My Work
-              </Button>
-
-              <Button
-                variant="outlined"
-                size="medium"
-                endIcon={<EmailIcon />}
-                sx={{
-                  borderRadius: 2,
-                  py: 1,
-                  px: 2.5,
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
-                  borderWidth: 2,
-                  "&:hover": {
-                    borderWidth: 2,
-                    transform: "translateY(-1px)",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
-                  }
-                }}
-              >
-                Get In Touch
-              </Button>
-            </Stack>
-
-            <Stack direction="row" spacing={1}>
-              {socialLinks.map((social, index) => (
-                <IconButton
-                  key={index}
-                  href={social.href}
-                  aria-label={social.label}
-                  size="small"
-                  sx={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 2,
-                    border: 1,
-                    borderColor: "divider",
-                    color: "text.secondary",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: "primary.main",
-                      borderColor: "primary.main",
-                      color: "white",
-                      transform: "translateY(-1px)",
-                      boxShadow: "0 4px 12px rgba(33, 150, 243, 0.3)"
-                    }
-                  }}
-                >
-                  {social.icon}
-                </IconButton>
-              ))}
-            </Stack>
-          </Stack>
-        </Box>
       </Paper>
     </motion.div>
   );

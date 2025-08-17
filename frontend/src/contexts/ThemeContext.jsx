@@ -11,9 +11,11 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(
-    localStorage.getItem("currentTheme") || "dark"
-  );
+  // Default to dark theme - will use saved preference if available, otherwise dark
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("currentTheme");
+    return savedTheme || "dark";
+  });
 
   useEffect(() => {
     document.body.classList.toggle("light", theme === "light");

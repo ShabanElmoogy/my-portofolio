@@ -211,6 +211,31 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
     }));
   };
 
+  // Gallery images handlers
+  const addImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      images: [...prev.images, { imageUrl: '', altText: '' }]
+    }));
+  };
+
+  const removeImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleImageChange = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.map((img, i) => i === index ? { ...img, [field]: value } : img)
+    }));
+    if (errors[`image_${index}_${field}`]) {
+      setErrors(prev => ({ ...prev, [`image_${index}_${field}`]: null }));
+    }
+  };
+
   const addDescriptionSection = (category) => {
     setFormData(prev => ({
       ...prev,
@@ -292,6 +317,17 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
       console.log('❌ No complete descriptions found');
     }
 
+    // Validate gallery images: Image URL required if a row exists
+    if (Array.isArray(formData.images)) {
+      formData.images.forEach((img, idx) => {
+        const url = (img?.imageUrl || '').trim();
+        const alt = (img?.altText || '').trim();
+        if (!url && (alt || img)) {
+          newErrors[`image_${idx}_imageUrl`] = 'Image URL is required for gallery images';
+        }
+      });
+    }
+
     console.log('🔍 Validation errors found:', newErrors);
     setErrors(newErrors);
     
@@ -346,9 +382,19 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
 
       console.log('🧹 Cleaned descriptions:', cleanedDescriptions);
 
+      // Clean up images - remove entries without a valid URL and ensure order
+      const cleanedImages = (formData.images || [])
+        .filter(img => img && img.imageUrl && img.imageUrl.trim())
+        .map((img, idx) => ({
+          imageUrl: img.imageUrl.trim(),
+          altText: (img.altText || '').trim(),
+          order: typeof img.order === 'number' ? img.order : idx
+        }));
+
       const payload = {
         ...formData,
         descriptions: cleanedDescriptions,
+        images: cleanedImages,
         businessTypeId: formData.businessTypeId || null,
         categoryId: formData.categoryId || null
       };
@@ -508,6 +554,60 @@ const ProjectDialog = ({ open, onClose, project = null, onSave }) => {
               helperText={errors.imgPath}
               required
             />
+          </Grid>
+
+          {/* Gallery Images */}
+          <Grid size={{ xs: 12 }}>
+            <Paper elevation={1} sx={{ p: 2, borderRadius: 2 }}>
+              <Stack spacing={2}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    Gallery Images
+                  </Typography>
+                  <Button startIcon={<AddIcon />} size="small" onClick={addImage}>
+                    Add Image
+                  </Button>
+                </Stack>
+
+                {formData.images.length === 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    No gallery images added. Use "Add Image" to include more images in the gallery.
+                  </Typography>
+                )}
+
+                {formData.images.map((img, index) => (
+                  <Paper key={index} variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, sm: 8 }}>
+                        <TextField
+                          fullWidth
+                          label="Image URL"
+                          value={img.imageUrl || ''}
+                          onChange={(e) => handleImageChange(index, 'imageUrl', e.target.value)}
+                          placeholder="https://example.com/image.jpg"
+                          error={!!errors[`image_${index}_imageUrl`]}
+                          helperText={errors[`image_${index}_imageUrl`]}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 4 }}>
+                        <TextField
+                          fullWidth
+                          label="Alt Text"
+                          value={img.altText || ''}
+                          onChange={(e) => handleImageChange(index, 'altText', e.target.value)}
+                          placeholder="Short description"
+                        />
+                      </Grid>
+                    </Grid>
+                    <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1 }}>
+                      <IconButton color="error" onClick={() => removeImage(index)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
+                  </Paper>
+                ))}
+              </Stack>
+            </Paper>
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>

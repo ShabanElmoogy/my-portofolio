@@ -8,11 +8,7 @@ import businessTypeRoutes from "./routes/businessTypeRoutes.js";
 const app = express();
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-  })
-);
+app.use(cors());
 
 // Root route for health check or welcome message
 app.get("/", (req, res) => {
@@ -20,13 +16,13 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/projects", projectRoutes);
-app.use("/categories", categoryRoutes);
-app.use("/technologies", technologyRoutes);
-app.use("/business-types", businessTypeRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/technologies", technologyRoutes);
+app.use("/api/business-types", businessTypeRoutes);
 
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });

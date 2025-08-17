@@ -24,14 +24,15 @@ const Footer = () => {
   const theme = useTheme();
 
   const contactInfo = [
-    { icon: <EmailIcon />, label: "hello@portfolio.com", href: "mailto:hello@portfolio.com" },
-    { icon: <PhoneIcon />, label: "+1 (555) 123-4567", href: "tel:+15551234567" },
-    { icon: <LocationIcon />, label: "New York, NY", href: "#" }
+    { icon: <EmailIcon />, label: "shaban.prog2021@gmail.com", href: "mailto:shaban.prog2021@gmail.com" },
+    { icon: <PhoneIcon />, label: "+201033982989  +201284555561", href: "tel:+15551234567" },
+    { icon: <LocationIcon />, label: "Port-Said, Egypt", href: "#" }
   ];
 
   const socialLinks = [
-    { icon: <LinkedInIcon />, url: "#", color: "#0077B5", label: "LinkedIn" },
-    { icon: <GitHubIcon />, url: "#", color: "#333", label: "GitHub" },
+    { icon: <LinkedInIcon />, url: "https://www.linkedin.com/in/shaban-elmogy-42310731a", color: "#0077B5", label: "LinkedIn" },
+    { icon: <GitHubIcon />, url: "https://github.com/ShabanElmoogy", color: "#333", label: "GitHub" },
+    { icon: <Box component="img" src="/qabilah.PNG" alt="Qabilah" sx={{ width: 18, height: 18, borderRadius: '4px', display: 'block' }} />, url: "https://qabilah.com/profile/shaban-elmogy-42310731a/posts", color: "#ffffff", label: "Qabilah" },
   ];
 
   const quickLinks = [

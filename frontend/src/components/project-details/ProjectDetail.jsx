@@ -297,7 +297,7 @@ const EnhancedDescriptionSection = ({ description, index, isDark }) => {
 };
 
 // Tabbed Description Component
-const TabbedDescriptions = ({ descriptions, isDark }) => {
+const TabbedDescriptions = ({ descriptions, isDark, project }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   // Group descriptions by category
@@ -310,13 +310,15 @@ const TabbedDescriptions = ({ descriptions, isDark }) => {
     return acc;
   }, {});
 
-  const categories = Object.keys(groupedDescriptions);
+  const baseCategories = Object.keys(groupedDescriptions);
+  const categories = ['Main', ...baseCategories];
   const currentCategory = categories[activeTab] || 'Overview';
   const currentDescriptions = groupedDescriptions[currentCategory] || [];
 
   // Get category icon
   const getCategoryIcon = (category) => {
     const categoryLower = category.toLowerCase();
+    if (categoryLower === 'main') return <HomeIcon />;
     if (categoryLower.includes('overview')) return <DescriptionIcon />;
     if (categoryLower.includes('feature')) return <CheckCircleIcon />;
     if (categoryLower.includes('technical')) return <CodeIcon />;
@@ -384,12 +386,14 @@ const TabbedDescriptions = ({ descriptions, isDark }) => {
                 <Stack direction="row" alignItems="center" spacing={1}>
                   {getCategoryIcon(category)}
                   <span>{category}</span>
-                  <Chip 
-                    label={groupedDescriptions[category].length} 
-                    size="small" 
-                    color="primary"
-                    sx={{ minWidth: 24, height: 20, fontSize: '0.75rem' }}
-                  />
+                  {category.toLowerCase() !== 'main' && (
+                    <Chip 
+                      label={(groupedDescriptions[category]?.length || 0)} 
+                      size="small" 
+                      color="primary"
+                      sx={{ minWidth: 24, height: 20, fontSize: '0.75rem' }}
+                    />
+                  )}
                 </Stack>
               }
             />
@@ -428,14 +432,88 @@ const TabbedDescriptions = ({ descriptions, isDark }) => {
               {currentCategory}
             </Typography>
 
-            {currentDescriptions.map((desc, index) => (
-              <EnhancedDescriptionSection
-                key={`${currentCategory}-${index}`}
-                description={desc}
-                index={index}
-                isDark={isDark}
-              />
-            ))}
+            {currentCategory.toLowerCase() === 'main' ? (
+              <Box>
+                {/* Hero Header inside Main */}
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Paper elevation={2} sx={{ p: 3, borderRadius: 3, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'background.paper', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)' }}>
+                      <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1, color: 'text.secondary' }}>
+                        Project Details
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2, mb: 1, background: 'linear-gradient(45deg, #2196F3, #21CBF3)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                        {project?.title}
+                      </Typography>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} alignItems="center" sx={{ mb: 1 }}>
+                        {project?.businessType && (
+                          <Chip label={project.businessType.name} variant="outlined" sx={{ borderColor: 'info.main', color: 'info.main', fontWeight: 600 }} size="small" />
+                        )}
+                        {project?.category && (
+                          <Chip label={project.category.name} variant="outlined" sx={{ borderColor: 'primary.main', color: 'primary.main', fontWeight: 600 }} size="small" />
+                        )}
+                        <Chip label={project?.featured ? 'Featured' : 'Regular'} size="small" color={project?.featured ? 'warning' : 'default'} variant="filled" />
+                      </Stack>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="caption" color="text.secondary">
+                          Created {project?.createdAt ? new Date(project.createdAt).toLocaleDateString() : '-'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">•</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Updated {project?.updatedAt ? new Date(project.updatedAt).toLocaleDateString() : '-'}
+                        </Typography>
+                      </Stack>
+                    </Paper>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Paper elevation={2} sx={{ p: 3, borderRadius: 3, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'background.paper', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)' }}>
+                      <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1, color: 'text.secondary' }}>
+                        Tech Stack
+                      </Typography>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                        {project?.technologies && project.technologies.length > 0 ? (
+                          project.technologies.map((tech, index) => (
+                            <Chip key={index} label={tech.name || tech} variant="filled" sx={{ backgroundColor: 'secondary.main', color: 'secondary.contrastText', fontWeight: 500, '&:hover': { backgroundColor: 'secondary.dark' } }} size="small" />
+                          ))
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">No technologies specified</Typography>
+                        )}
+                      </Stack>
+                    </Paper>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Paper elevation={2} sx={{ p: 3, borderRadius: 3, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'background.paper', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.06)' }}>
+                      <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1, color: 'text.secondary' }}>
+                        Actions
+                      </Typography>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                        {project?.previewUrl && (
+                          <Button variant="contained" size="medium" startIcon={<LaunchIcon />} onClick={() => window.open(project.previewUrl, '_blank', 'noopener,noreferrer')} sx={{ borderRadius: 3, px: 2, py: 1, background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)', '&:hover': { background: 'linear-gradient(45deg, #1976D2 30%, #1CB5E0 90%)', transform: 'translateY(-2px)', boxShadow: '0 8px 20px rgba(33, 150, 243, 0.3)' } }}>
+                            Live Demo
+                          </Button>
+                        )}
+                        {project?.githubUrl && (
+                          <Button variant="outlined" size="medium" startIcon={<GitHubIcon />} onClick={() => window.open(project.githubUrl, '_blank', 'noopener,noreferrer')} sx={{ borderRadius: 3, px: 2, py: 1, borderWidth: 2, '&:hover': { borderWidth: 2, transform: 'translateY(-2px)' } }}>
+                            Source Code
+                          </Button>
+                        )}
+                      </Stack>
+                    </Paper>
+                  </Grid>
+                </Grid>
+
+                              </Box>
+            ) : (
+              currentDescriptions.map((desc, index) => (
+                <EnhancedDescriptionSection
+                  key={`${currentCategory}-${index}`}
+                  description={desc}
+                  index={index}
+                  isDark={isDark}
+                />
+              ))
+            )}
           </Box>
         </Fade>
       </Box>
@@ -689,32 +767,33 @@ const ProjectDetail = () => {
                 borderBottom: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)"
               }}
             >
-              <Stack direction={"row"} justifyContent={"space-between"}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 700,
-                    background: "linear-gradient(45deg, #2196F3, #21CBF3)",
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    mb: 1
-                  }}
-                >
-                  Project Gallery
-                </Typography>
-
-                {/* Back Button */}
+              <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" spacing={1}>
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      lineHeight: 1.2,
+                      mb: 0.5,
+                      background: "linear-gradient(45deg, #2196F3, #21CBF3)",
+                      backgroundClip: "text",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent"
+                    }}
+                  >
+                    Project Gallery
+                  </Typography>
+                                                    </Box>
                 <Button
                   startIcon={<ArrowBackIcon />}
                   onClick={handleGoBack}
-                  sx={{ mb: 1 }}
+                  sx={{ mt: { xs: 1, md: 0 } }}
                 >
                   Back to Projects
                 </Button>
               </Stack>
 
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                 {maxSteps} media item{maxSteps !== 1 ? 's' : ''} • Images and videos showcasing this project
               </Typography>
             </Box>
@@ -975,225 +1054,23 @@ const ProjectDetail = () => {
           </Paper>
         )}
 
+        
         {/* Project Info */}
         <Grid container spacing={4} sx={{ mt: 2 }}>
           {/* Main Content */}
-          <Grid size={{ xs: 12, md: 8 }}>
-            <Paper
-              elevation={2}
-              sx={{
-                p: 4,
-                borderRadius: 3,
-                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "background.paper",
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "none"
-              }}
-            >
-              <Typography
-                variant="h3"
-                component="h1"
-                gutterBottom
-                sx={{
-                  fontWeight: 700,
-                  background: "linear-gradient(45deg, #2196F3, #21CBF3)",
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  mb: 3
-                }}
-              >
-                {project.title}
-              </Typography>
-
-              {/* Categories and Business Type */}
-              <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-                {project.businessType && (
-                  <Chip
-                    label={project.businessType.name}
-                    variant="outlined"
-                    sx={{
-                      borderColor: "info.main",
-                      color: "info.main",
-                      fontWeight: 600
-                    }}
-                  />
-                )}
-                {project.category && (
-                  <Chip
-                    label={project.category.name}
-                    variant="outlined"
-                    sx={{
-                      borderColor: "primary.main",
-                      color: "primary.main",
-                      fontWeight: 600
-                    }}
-                  />
-                )}
-              </Stack>
-
-              <Divider sx={{ my: 3 }} />
-
-              {/* Enhanced Tabbed Description Sections */}
-              <Box sx={{ mb: 4 }}>
-                <TabbedDescriptions 
-                  descriptions={project.descriptions || []} 
-                  isDark={isDark} 
-                />
-              </Box>
-
-              {/* Technologies */}
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{ fontWeight: 600, color: "text.primary" }}
-              >
-                Technologies Used
-              </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} sx={{ mb: 4 }}>
-                {project.technologies && project.technologies.length > 0 ? (
-                  project.technologies.map((tech, index) => (
-                    <Chip
-                      key={index}
-                      label={tech.name || tech}
-                      variant="filled"
-                      sx={{
-                        backgroundColor: "secondary.main",
-                        color: "secondary.contrastText",
-                        fontWeight: 500,
-                        "&:hover": {
-                          backgroundColor: "secondary.dark"
-                        }
-                      }}
-                    />
-                  ))
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No technologies specified
-                  </Typography>
-                )}
-              </Stack>
-
-              {/* Action Buttons */}
-              <Stack direction="row" spacing={2}>
-                {project.previewUrl && (
-                  <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<LaunchIcon />}
-                    onClick={() => handleOpenUrl(project.previewUrl)}
-                    sx={{
-                      borderRadius: 3,
-                      px: 3,
-                      py: 1.5,
-                      background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-                      "&:hover": {
-                        background: "linear-gradient(45deg, #1976D2 30%, #1CB5E0 90%)",
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 8px 20px rgba(33, 150, 243, 0.3)"
-                      }
-                    }}
-                  >
-                    Live Demo
-                  </Button>
-                )}
-                {project.githubUrl && (
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    startIcon={<GitHubIcon />}
-                    onClick={() => handleOpenUrl(project.githubUrl)}
-                    sx={{
-                      borderRadius: 3,
-                      px: 3,
-                      py: 1.5,
-                      borderWidth: 2,
-                      "&:hover": {
-                        borderWidth: 2,
-                        transform: "translateY(-2px)"
-                      }
-                    }}
-                  >
-                    Source Code
-                  </Button>
-                )}
-              </Stack>
-            </Paper>
+          <Grid size={{ xs: 12 }}>
+            <Box sx={{ mb: 2 }}>
+              <TabbedDescriptions 
+                descriptions={project.descriptions || []} 
+                isDark={isDark}
+                project={project}
+              />
+            </Box>
           </Grid>
 
-          {/* Sidebar */}
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Paper
-              elevation={2}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "background.paper",
-                border: isDark ? "1px solid rgba(255,255,255,0.1)" : "none"
-              }}
-            >
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{ fontWeight: 600, color: "text.primary" }}
-              >
-                Project Details
-              </Typography>
-
-              <Stack spacing={2}>
-                <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Created
-                  </Typography>
-                  <Typography variant="body1">
-                    {new Date(project.createdAt).toLocaleDateString()}
-                  </Typography>
-                </Box>
-
-                <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Last Updated
-                  </Typography>
-                  <Typography variant="body1">
-                    {new Date(project.updatedAt).toLocaleDateString()}
-                  </Typography>
-                </Box>
-
-                {project.businessType && (
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Business Type
-                    </Typography>
-                    <Typography variant="body1">
-                      {project.businessType.name}
-                    </Typography>
-                  </Box>
-                )}
-
-                {project.category && (
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Category
-                    </Typography>
-                    <Typography variant="body1">
-                      {project.category.name}
-                    </Typography>
-                  </Box>
-                )}
-
-                <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Status
-                  </Typography>
-                  <Chip
-                    label={project.featured ? "Featured" : "Regular"}
-                    size="small"
-                    color={project.featured ? "warning" : "default"}
-                    variant="filled"
-                  />
-                </Box>
-              </Stack>
-            </Paper>
-          </Grid>
-        </Grid>
+          
+          
+                  </Grid>
       </Container>
     </Box>
   );

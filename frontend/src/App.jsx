@@ -38,13 +38,21 @@ const AppContent = () => {
           element={
             <div id="up" className="container">
               <Header />
-              <Hero />
+              <section id="hero">
+                <Hero />
+              </section>
               <div className="divider" />
-              <FeaturedProjectsCarousel />
+              <section id="featured-projects">
+                <FeaturedProjectsCarousel />
+              </section>
               <div className="divider" />
-              <Main />
+              <section id="projects">
+                <Main />
+              </section>
               <div className="divider" />
-              <Contact />
+              <section id="contact">
+                <Contact />
+              </section>
               <div className="divider" />
               <Footer />
               <a

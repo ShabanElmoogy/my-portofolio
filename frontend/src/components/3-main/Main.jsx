@@ -630,7 +630,7 @@ const Main = () => {
                   >
                     <Card
                       sx={{
-                        height: '100%',
+                        height: 480, // Fixed height for all cards
                         display: 'flex',
                         flexDirection: 'column',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -810,15 +810,25 @@ const Main = () => {
                         )}
                       </Box>
 
-                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                      <CardContent sx={{ 
+                        flexGrow: 1, 
+                        p: 3, 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        height: 'calc(100% - 240px - 72px)' // Total height minus image height minus button area
+                      }}>
                         <Typography
                           variant="h5"
                           component="h2"
-                          gutterBottom
                           sx={{
                             fontWeight: 600,
-                            mb: 2,
-                            lineHeight: 1.3
+                            mb: 1.5,
+                            lineHeight: 1.3,
+                            height: '2.6em', // Fixed height for 2 lines
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical'
                           }}
                         >
                           {item.title}
@@ -827,51 +837,76 @@ const Main = () => {
                         <Typography
                           variant="body2"
                           color="text.secondary"
-                          sx={{ mb: 2, lineHeight: 1.6 }}
-                        >
-                          {getProjectDescription(item)}
+                          sx={{ 
+                            mb: 2, 
+                            lineHeight: 1.5,
+                            height: '3em', // Fixed height for 2 lines
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical'
+                          }}>
+                        {getProjectDescription(item)}
                         </Typography>
 
-                        <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-                          {item.technologies && item.technologies.length > 0 ? (
-                            item.technologies.slice(0, 3).map((tech, techIndex) => (
-                              <Chip
-                                key={techIndex}
-                                label={tech.name || tech}
-                                size="small"
-                                variant="outlined"
-                                sx={{
-                                  borderColor: 'primary.main',
-                                  color: 'primary.main',
-                                  '&:hover': {
-                                    backgroundColor: 'primary.main',
-                                    color: 'white'
-                                  }
-                                }}
-                              />
-                            ))
-                          ) : (
-                            item.technology && (
-                              <Chip
-                                label={item.technology}
-                                size="small"
-                                variant="outlined"
-                                sx={{
-                                  borderColor: 'primary.main',
-                                  color: 'primary.main'
-                                }}
-                              />
-                            )
-                          )}
-                          {item.technologies && item.technologies.length > 3 && (
+                        {/* Category Badge under description */}
+                        {item.category && (
+                          <Box sx={{ mb: 2 }}>
                             <Chip
-                              label={`+${item.technologies.length - 3} more`}
+                              label={item.category.name}
                               size="small"
-                              variant="outlined"
-                              color="secondary"
+                              sx={{
+                                fontWeight: 'bold',
+                                backgroundColor: 'primary.main',
+                                color: 'white'
+                              }}
                             />
-                          )}
-                        </Stack>
+                          </Box>
+                        )}
+
+                        {/* Technology badges - fixed at bottom */}
+                        <Box sx={{ mt: 'auto' }}>
+                          <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                            {item.technologies && item.technologies.length > 0 ? (
+                              item.technologies.slice(0, 3).map((tech, techIndex) => (
+                                <Chip
+                                  key={techIndex}
+                                  label={tech.name || tech}
+                                  size="small"
+                                  variant="outlined"
+                                  sx={{
+                                    borderColor: 'primary.main',
+                                    color: 'primary.main',
+                                    '&:hover': {
+                                      backgroundColor: 'primary.main',
+                                      color: 'white'
+                                    }
+                                  }}
+                                />
+                              ))
+                            ) : (
+                              item.technology && (
+                                <Chip
+                                  label={item.technology}
+                                  size="small"
+                                  variant="outlined"
+                                  sx={{
+                                    borderColor: 'primary.main',
+                                    color: 'primary.main'
+                                  }}
+                                />
+                              )
+                            )}
+                            {item.technologies && item.technologies.length > 3 && (
+                              <Chip
+                                label={`+${item.technologies.length - 3} more`}
+                                size="small"
+                                variant="outlined"
+                                color="secondary"
+                              />
+                            )}
+                          </Stack>
+                        </Box>
                       </CardContent>
 
                       <CardActions sx={{ p: 3, pt: 0 }}>

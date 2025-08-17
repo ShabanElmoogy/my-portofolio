@@ -170,10 +170,11 @@ export const createProject = async (req, res) => {
       previewUrl,
       technologyIds, 
       featured = false,
-      descriptions = [] // Array of {category, title, points, order}
+      descriptions = []
     } = req.body;
 
     console.log('Creating project with data:', req.body);
+    console.log('Images received:', images);
 
     // Validation
     if (!title) {
@@ -203,7 +204,6 @@ export const createProject = async (req, res) => {
       if (!desc.points || !Array.isArray(desc.points) || desc.points.length === 0) {
         return res.status(400).json({ error: "Description section must have at least one point" });
       }
-      // Check that all points are non-empty strings
       for (const point of desc.points) {
         if (!point || typeof point !== 'string' || !point.trim()) {
           return res.status(400).json({ error: "All description points must be non-empty strings" });
@@ -211,36 +211,56 @@ export const createProject = async (req, res) => {
       }
     }
 
-    const project = await prisma.project.create({
-      data: {
-        title,
-        businessTypeId: businessTypeId ? Number(businessTypeId) : null,
-        categoryId: categoryId ? Number(categoryId) : null,
-        imgPath,
-        githubUrl,
-        previewUrl,
-        featured: Boolean(featured),
-        technologies: {
-          create: technologyIds?.map(techId => ({
-            technologyId: Number(techId)
-          })) || []
-        },
-        images: {
-          create: images.map((img, index) => ({
-            imageUrl: img.url,
-            altText: img.altText || '',
-            order: img.order || index
-          }))
-        },
-        descriptions: {
-          create: descriptions.map((desc, index) => ({
-            category: desc.category,
-            title: desc.title,
-            points: JSON.stringify(desc.points),
-            order: desc.order !== undefined ? desc.order : index
-          }))
-        }
+    // Clean and validate images - NEVER allow undefined imageUrl
+    const validImages = images
+      .filter(img => {
+        const hasValidUrl = img && img.imageUrl && typeof img.imageUrl === 'string' && img.imageUrl.trim();
+        console.log('Image validation:', img, 'hasValidUrl:', hasValidUrl);
+        return hasValidUrl;
+      })
+      .map((img, index) => ({
+        imageUrl: img.imageUrl.trim(),
+        altText: (img.altText || '').toString(),
+        order: typeof img.order === 'number' ? img.order : index
+      }));
+
+    console.log('Valid images after filtering:', validImages);
+
+    // Build data object
+    const projectData = {
+      title,
+      businessTypeId: businessTypeId ? Number(businessTypeId) : null,
+      categoryId: categoryId ? Number(categoryId) : null,
+      imgPath,
+      githubUrl,
+      previewUrl,
+      featured: Boolean(featured),
+      technologies: {
+        create: technologyIds?.map(techId => ({
+          technologyId: Number(techId)
+        })) || []
       },
+      descriptions: {
+        create: descriptions.map((desc, index) => ({
+          category: desc.category,
+          title: desc.title,
+          points: JSON.stringify(desc.points),
+          order: desc.order !== undefined ? desc.order : index
+        }))
+      }
+    };
+
+    // Only add images if we have valid ones
+    if (validImages.length > 0) {
+      projectData.images = {
+        create: validImages
+      };
+    }
+
+    console.log('Final project data:', JSON.stringify(projectData, null, 2));
+
+    const project = await prisma.project.create({
+      data: projectData,
       include: {
         businessType: true,
         category: true,
@@ -276,6 +296,7 @@ export const updateProject = async (req, res) => {
     } = req.body;
 
     console.log('Updating project with data:', req.body);
+    console.log('Images received:', images);
 
     // Validation
     if (title && !title.trim()) {
@@ -306,7 +327,6 @@ export const updateProject = async (req, res) => {
         if (!desc.points || !Array.isArray(desc.points) || desc.points.length === 0) {
           return res.status(400).json({ error: "Description section must have at least one point" });
         }
-        // Check that all points are non-empty strings
         for (const point of desc.points) {
           if (!point || typeof point !== 'string' || !point.trim()) {
             return res.status(400).json({ error: "All description points must be non-empty strings" });
@@ -332,6 +352,21 @@ export const updateProject = async (req, res) => {
       }
     }
 
+    // Clean and validate images - NEVER allow undefined imageUrl
+    const validImages = images
+      .filter(img => {
+        const hasValidUrl = img && img.imageUrl && typeof img.imageUrl === 'string' && img.imageUrl.trim();
+        console.log('Image validation:', img, 'hasValidUrl:', hasValidUrl);
+        return hasValidUrl;
+      })
+      .map((img, index) => ({
+        imageUrl: img.imageUrl.trim(),
+        altText: (img.altText || '').toString(),
+        order: typeof img.order === 'number' ? img.order : index
+      }));
+
+    console.log('Valid images after filtering:', validImages);
+
     // Delete existing relationships
     await prisma.projectTechnology.deleteMany({
       where: { projectId: Number(id) }
@@ -343,41 +378,46 @@ export const updateProject = async (req, res) => {
       where: { projectId: Number(id) }
     });
 
+    // Build update data
+    const updateData = {
+      ...(title && { title }),
+      ...(businessTypeId !== undefined && { 
+        businessTypeId: businessTypeId ? Number(businessTypeId) : null 
+      }),
+      ...(categoryId !== undefined && { 
+        categoryId: categoryId ? Number(categoryId) : null 
+      }),
+      ...(imgPath && { imgPath }),
+      ...(githubUrl && { githubUrl }),
+      ...(previewUrl && { previewUrl }),
+      ...(featured !== undefined && { featured: Boolean(featured) }),
+      technologies: {
+        create: technologyIds?.map(techId => ({
+          technologyId: Number(techId)
+        })) || []
+      },
+      descriptions: {
+        create: descriptions.map((desc, index) => ({
+          category: desc.category,
+          title: desc.title,
+          points: JSON.stringify(desc.points),
+          order: desc.order !== undefined ? desc.order : index
+        }))
+      }
+    };
+
+    // Only add images if we have valid ones
+    if (validImages.length > 0) {
+      updateData.images = {
+        create: validImages
+      };
+    }
+
+    console.log('Final update data:', JSON.stringify(updateData, null, 2));
+
     const project = await prisma.project.update({
       where: { id: Number(id) },
-      data: {
-        ...(title && { title }),
-        ...(businessTypeId !== undefined && { 
-          businessTypeId: businessTypeId ? Number(businessTypeId) : null 
-        }),
-        ...(categoryId !== undefined && { 
-          categoryId: categoryId ? Number(categoryId) : null 
-        }),
-        ...(imgPath && { imgPath }),
-        ...(githubUrl && { githubUrl }),
-        ...(previewUrl && { previewUrl }),
-        ...(featured !== undefined && { featured: Boolean(featured) }),
-        technologies: {
-          create: technologyIds?.map(techId => ({
-            technologyId: Number(techId)
-          })) || []
-        },
-        images: {
-          create: images.map((img, index) => ({
-            imageUrl: img.url,
-            altText: img.altText || '',
-            order: img.order || index
-          }))
-        },
-        descriptions: {
-          create: descriptions.map((desc, index) => ({
-            category: desc.category,
-            title: desc.title,
-            points: JSON.stringify(desc.points),
-            order: desc.order !== undefined ? desc.order : index
-          }))
-        }
-      },
+      data: updateData,
       include: {
         businessType: true,
         category: true,
