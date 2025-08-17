@@ -30,8 +30,13 @@ app.get("/api/health", (req, res) => {
 });
 
 // Serve React app for all non-API routes (SPA fallback)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+app.use((req, res, next) => {
+  // If it's not an API route and not a static file, serve index.html
+  if (!req.path.startsWith('/api') && !req.path.includes('.')) {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  } else {
+    next();
+  }
 });
 
 const port = process.env.PORT || 3000;
