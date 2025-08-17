@@ -13,32 +13,22 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # Use a Render Disk to persist SQLite; Prisma will read this DATABASE_URL
+      # SQLite in-memory for free tier (no persistent disk)
       - key: DATABASE_URL
-        value: file:/data/dev.db
-    disk:
-      name: data
-      mountPath: /data
-      sizeGB: 1
+        value: file:./dev.db
 
-  - type: pserv
+  - type: static
     name: portfolio-frontend
-    env: static
-    rootDir: frontend
     buildCommand: |
+      cd frontend
       npm install
       npm run build
-    staticPublishPath: dist
+    publishPath: frontend/dist
     autoDeploy: true
     envVars:
-      # Expose the backend base URL to Vite at build time
+      # Use host property to get backend URL
       - key: VITE_API_BASE_URL
         fromService:
           type: web
           name: portfolio-backend
-          property: url
-    routes:
-      # SPA fallback so client-side routing works
-      - type: rewrite
-        source: /*
-        destination: /index.html
+          property: host
