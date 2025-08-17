@@ -27,9 +27,6 @@ services:
     staticPublishPath: frontend/dist
     autoDeploy: true
     envVars:
-      # Use host property to get backend URL
+      # Manually construct the backend URL - Render services get https:// URLs
       - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: portfolio-backend
-          property: host
+        value: https://portfolio-backend.onrender.com
