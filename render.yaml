@@ -17,13 +17,14 @@ services:
       - key: DATABASE_URL
         value: file:./dev.db
 
-  - type: static
+  - type: web
     name: portfolio-frontend
+    env: static
     buildCommand: |
       cd frontend
       npm install
       npm run build
-    publishPath: frontend/dist
+    staticPublishPath: frontend/dist
     autoDeploy: true
     envVars:
       # Use host property to get backend URL
