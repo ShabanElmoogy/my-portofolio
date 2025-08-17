@@ -1,32 +1,24 @@
 services:
   - type: web
-    name: portfolio-backend
+    name: portfolio-fullstack
     env: node
     plan: free
-    rootDir: backend
     buildCommand: |
+      # Build frontend first
+      cd frontend
+      npm install
+      npm run build
+      cd ..
+      # Then setup backend
+      cd backend
       npm install
       npx prisma generate
       npx prisma migrate deploy
-    startCommand: node index.js
+    startCommand: |
+      cd backend && node index.js
     autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
-      # SQLite in-memory for free tier (no persistent disk)
       - key: DATABASE_URL
         value: file:./dev.db
-
-  - type: web
-    name: portfolio-frontend
-    env: static
-    buildCommand: |
-      cd frontend
-      npm install
-      npm run build
-    staticPublishPath: frontend/dist
-    autoDeploy: true
-    envVars:
-      # Manually construct the backend URL - Render services get https:// URLs
-      - key: VITE_API_BASE_URL
-        value: https://portfolio-backend.onrender.com
