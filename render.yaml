@@ -4,18 +4,8 @@ services:
     env: node
     plan: free
     buildCommand: |
-      # Build frontend first
-      cd frontend
-      npm install
-      npm run build
-      cd ..
-      # Then setup backend
-      cd backend
-      npm install
-      npx prisma generate
-      npx prisma migrate deploy
-    startCommand: |
-      cd backend && node index.js
+      cd frontend && npm install && npm run build && cd .. && cd backend && npm install && npx prisma generate && npx prisma migrate deploy
+    startCommand: cd backend && npm start
     autoDeploy: true
     envVars:
       - key: NODE_ENV
